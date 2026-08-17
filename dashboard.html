@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Task Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1>Task Manager</h1>
+                <p>Welcome, {{ user_name }}!</p>
+            </div>
+
+            <a class="logout-button" href="{{ url_for('logout') }}">
+                Logout
+            </a>
+        </div>
+
+        <div class="card">
+            <h2>Add New Task</h2>
+
+            <form method="POST" action="{{ url_for('add_task') }}">
+                <label for="title">Task Title</label>
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    placeholder="Enter task title"
+                    required
+                >
+
+                <label for="description">Description</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Enter task description"
+                ></textarea>
+
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>My Tasks</h2>
+
+            {% if tasks %}
+                {% for task in tasks %}
+                    <div class="task">
+                        <h3>{{ task.title }}</h3>
+                        <p>{{ task.description }}</p>
+
+                        <p>
+                            <strong>Status:</strong>
+                            {{ task.status }}
+                        </p>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('update_task', task_id=task._id) }}"
+                        >
+                            <input
+                                type="text"
+                                name="title"
+                                value="{{ task.title }}"
+                                required
+                            >
+
+                            <textarea name="description">{{ task.description }}</textarea>
+
+                            <select name="status">
+                                <option value="Pending"
+                                    {% if task.status == "Pending" %}selected{% endif %}>
+                                    Pending
+                                </option>
+
+                                <option value="In Progress"
+                                    {% if task.status == "In Progress" %}selected{% endif %}>
+                                    In Progress
+                                </option>
+
+                                <option value="Completed"
+                                    {% if task.status == "Completed" %}selected{% endif %}>
+                                    Completed
+                                </option>
+                            </select>
+
+                            <button type="submit">Update Task</button>
+                        </form>
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('delete_task', task_id=task._id) }}"
+                        >
+                            <button type="submit" class="delete-button">
+                                Delete Task
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No tasks yet. Add your first task above.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
